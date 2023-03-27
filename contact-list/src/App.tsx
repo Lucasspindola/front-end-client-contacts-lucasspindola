@@ -1,25 +1,33 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import "react-toastify/dist/ReactToastify.min.css";
+import { Register } from './Pages/Register';
+import { ToastContainer } from "react-toastify";
+import { RoutesApp } from './Components/RoutesApp';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    
+    <>
+     
+      <RoutesApp
+      />
+      
+      <ToastContainer
+        position="top-right"
+        autoClose={1000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        toastStyle={{ backgroundColor: "black", color: "white" }}
+      />
+     
+    </>
   );
 }
 
