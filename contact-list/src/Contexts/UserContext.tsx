@@ -2,7 +2,7 @@ import React, { ReactNode, createContext, useEffect, useState } from "react";
 import axios from "axios";
 import {useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { iTech } from "./TechsContext";
+import { iTech } from "./ContactsContext";
 
 interface iUserContextProps {
   children: ReactNode;
@@ -54,15 +54,17 @@ export interface iLogin {
 export interface iUserContext {
   loginUser: (data: iLogin) => void;
   registerUser: (data: iRegisterUser) => void;
-  userAllData: iLoginResponse;
+  setModalNewContactBoolean: React.Dispatch<React.SetStateAction<boolean>>;
+  modalNewContactBoolean: boolean
+  // userAllData: iLoginResponse;
 }
 export const UserContext = createContext({} as iUserContext);
 
 export const UserContextProvider = ({ children }: iUserContextProps) => {
-  const [userAllData, setUserAllData] = useState<iLoginResponse>(
-    {} as iLoginResponse
-  );
-
+  // const [userAllData, setUserAllData] = useState<iLoginResponse>(
+  //   {} as iLoginResponse
+  // );
+  const [modalNewContactBoolean, setModalNewContactBoolean] = useState<boolean>(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -78,7 +80,7 @@ export const UserContextProvider = ({ children }: iUserContextProps) => {
               },
             })
             .then((res) => {
-              setUserAllData(res.data);
+              // setUserAllData(res.data);
               // navigate("/dashboard");
             });
         } catch (error) {
@@ -99,9 +101,8 @@ export const UserContextProvider = ({ children }: iUserContextProps) => {
         localStorage.removeItem("authToken");
         window.localStorage.setItem("authToken", res.data.token);
         res.data.token && toast.success("Login realizado com sucesso!");
-        // navigate("/dashboard");
+        navigate("/dashboard");
       })
-
       .catch((err) => {
         console.log(err)
         toast.error(
@@ -137,13 +138,15 @@ export const UserContextProvider = ({ children }: iUserContextProps) => {
         toast.error(`Ops, houve um erro em nosso servidor. Tente novamente!`);
       });
   };
+  
 
   return (
     <UserContext.Provider
       value={{
         loginUser,
         registerUser,
-        userAllData,
+        modalNewContactBoolean, setModalNewContactBoolean
+        // userAllData,
       }}
     >
       {children}
