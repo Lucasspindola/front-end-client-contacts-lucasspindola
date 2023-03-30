@@ -1,17 +1,12 @@
 import { ContainerDashboard } from "./style";
-// import { Navigate } from "react-router-dom";
-// import logo from "../../Assets/Logo.png";
-// import { ListOfTechnologies } from "../../Components/ListOfTechnologies";
-import { ContactsContext } from "../../Contexts/ContactsContext";
+import { ContactsContext, iContactContext } from "../../Contexts/ContactsContext";
 import { useContext, useEffect} from "react";
-// import axios from "axios";
-
-// import { UserContext } from "../../Contexts/UserContext";
-
 import { iLoginResponse, iUserContext, UserContext } from "../../Contexts/UserContext";
+import { Navigate } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { ContactRegister } from "../../Components/ContactRegister";
 import { ListOfContacts } from "../../Components/ListContacts";
+import { ProfileDataUserUpdateModal } from "../../Components/ProfileDataUpdateModal";
 
 export interface iContextContactDashboard {
   setModalRegister: React.Dispatch<React.SetStateAction<boolean>>;
@@ -20,36 +15,37 @@ export interface iContextContactDashboard {
 
 
 export const Dashboard = () => {
-  // const { logout} = useContext<iContactContext>(ContactsContext);
+
   // const [userAllData, setUserAllData] = useState<iDataUser>(
   //   {} as iDataUser
   // );
-  const { setModalNewContactBoolean, modalNewContactBoolean } = useContext<iUserContext>(UserContext);
-  const { userAllData, setUserAllData,dataUser, logout, listState} = useContext(ContactsContext);
+  const { setModalNewContactBoolean, modalNewContactBoolean, updateUserState, setUpdateUserState } = useContext<iUserContext>(UserContext);
+  const { userAllData,dataUser, logout, listState, token} = useContext(ContactsContext);
  
 useEffect(() => {
   dataUser();
 }, [listState]);
   return (
     <>
-
-    {modalNewContactBoolean? <ContactRegister/> : "" }
     
-      {/* {token ? ( */}
+    {modalNewContactBoolean? <ContactRegister/> : "" }
+    {updateUserState? <ProfileDataUserUpdateModal/> : "" }
+    
+      {token ? (
         <ContainerDashboard>
         
           <header>
-          <img className="logoIcon" src=  {userAllData?.profileImage} alt="" />
+            <button className="btnProfileEdit" onClick={()=>setUpdateUserState(true)}>
+              <img className="logoIcon" src=  {userAllData?.profileImage} alt="" />
+              Editar
+              </button>
+          
             <button onClick={() => logout()}>Sair</button>
           </header>
 
           <div className="containerInformationsProfile">
-            <h2>Olá,
-               {userAllData?.name}
-               </h2>
-            <p className="moduleUser">Contato Atual:
-              {userAllData?.phone}
-            </p>
+            <h2>Olá, {userAllData?.name}</h2>
+            <p className="contactCurrent">Contato Atual: {userAllData?.phone}</p>
             
           </div>
           <div className="containerTitleUl">
@@ -63,12 +59,12 @@ useEffect(() => {
             <ListOfContacts></ListOfContacts>
           </main>
         </ContainerDashboard>
-      {/* ) 
-      // : ( */}
-      {/* //   // <Navigate to="/login" replace /> */}
+       ) 
+       : (
+      <Navigate to="/login" replace />
        
 
-      {/* // )} */}
+       )} 
     </>
   );
 };

@@ -27,7 +27,7 @@ const schema = yup.object().shape({
     .string()
     .required("Campo obrigatório!")
     .oneOf([yup.ref("password"), null], "É necessário que as senhas sejam idênticas."),
-    profileImage: yup.string().required("Campo obrigatório!"),
+    profileImage: yup.string().notRequired(),
   phone: yup.string().required("Campo obrigatório!").matches(
     /^[0-9]+$/,"fd"
   ).min(8, "Mínimo de 8 dígitos é necessário.").max(11, "Máximo de 11 dígitos é permitido"),
@@ -47,7 +47,6 @@ export const Register = () => {
   return (
     <RegisterContainer>
       <div className="containerLogoAndBtnReturn">
-        {/* <img src={logo} alt="LOGO" /> */}
         <FcBusinessContact className="logoIcon" style={{width:"100%", height:"100%"}} />
         <button className="returnBtn" onClick={() => navigate("/login")}>
         

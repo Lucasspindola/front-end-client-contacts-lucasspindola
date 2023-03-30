@@ -1,21 +1,10 @@
-import { ReactNode, createContext, useState, useEffect } from "react";
+import { ReactNode, createContext, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { boolean } from "yup";
-// import { useEffect } from "react";
-// import { iLoginResponse } from "./UserContext";
-
-interface iTechsContextsProps {
+import { iUserContext, UserContext } from "./UserContext";
+interface iContactsContextsProps {
   children: ReactNode;
-}
-
-export interface iTech {
-  created_at: string;
-  id: string;
-  status: string;
-  title: string;
-  updated_at: string;
 }
 export interface iContact{
   id: string;
@@ -26,6 +15,12 @@ export interface iContact{
   created_at: string;
 	updatedAt:string;
 	deletedAt: null
+}
+export interface iNewContact{
+  name: string;
+  email: string;
+  phone: string;
+  profileImage?: null|string
 }
 export interface iDataUser {
   id: string;
@@ -44,15 +39,18 @@ export interface iContactContext {
   setUserAllData:  React.Dispatch<React.SetStateAction<iDataUser>>;
   dataUser:()=>Promise<void>;
   listState: boolean;
-   setListState:  React.Dispatch<React.SetStateAction<boolean>>
+  setListState:  React.Dispatch<React.SetStateAction<boolean>>;
+  deleteContactState: boolean;
+  setDeleteContactState:React.Dispatch<React.SetStateAction<boolean>>;
+  contactDelete:(id: string) => Promise<void>;
+  token: string;
+  newContact: (data: iNewContact) => void;
 }
-// setBoleean: React.Dispatch<React.SetStateAction<boolean>>;
-  // updatedList: () => Promise<void>;
 
 export const ContactsContext = createContext<iContactContext>({} as iContactContext);
 
-export const ContactsContextProvider = ({ children }: iTechsContextsProps) => {
-  // const token = window.localStorage.getItem("authToken") || "";
+export const ContactsContextProvider = ({ children }: iContactsContextsProps) => {
+  const token = window.localStorage.getItem("authToken") || "";
   const navigate = useNavigate();
 
   const sucessLogout = (message: string) => {
@@ -62,6 +60,8 @@ export const ContactsContextProvider = ({ children }: iTechsContextsProps) => {
     {} as iDataUser
   );
   const [listState, setListState] = useState<boolean>(false);
+ 
+  const [deleteContactState, setDeleteContactState] = useState<boolean>(false);
   
   
   async function dataUser() {
@@ -78,23 +78,94 @@ export const ContactsContextProvider = ({ children }: iTechsContextsProps) => {
           .then((res) => {
             setUserAllData(res.data);
             return
-            
-            // navigate("/dashboard");
           });
       } catch (error) {
-        console.log(error, "ERRO AQUI")
+        console.log(error)
         localStorage.removeItem("authToken");
-        // navigate("/");
+        navigate("/");
       }
     }
   }
 
-
+  const contactDelete = async (id: string) => {
+    const token = window.localStorage.getItem("authToken");
+    await axios
+      .delete(`http://localhost:3001/contacts/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        setListState(!listState)
+        res && toast.success("Deletado com sucesso!");
+      })
+      .catch((err) => {
+        err && toast.error("Ops, houve um erro, tente novamente!");
+      });
+  };
   
   const logout = ()=> {
     window.localStorage.removeItem("authToken");
     navigate("/login");
     sucessLogout("Sua sessão foi encerrada com sucesso!");
+  };
+  const { setModalNewContactBoolean } = useContext<iUserContext>(UserContext);
+  const newContact = (data: iNewContact) => {
+    const token = window.localStorage.getItem("authToken");
+
+    if(data?.profileImage === ""){
+      console.log(data)
+
+      data.profileImage= "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQJGlDRZM5zsQv-p66Q6MYlWMqYgokxPNLOw&usqp=CAU";
+      console.log(data)
+      axios
+      .post(
+        "http://localhost:3001/contacts",
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((res) => {
+        res && toast.success("Contato criado com sucesso!");
+       
+        setModalNewContactBoolean(false);
+        setListState(!listState)
+
+      })
+      .catch((err) => {
+        console.log(err?.message)
+        err.name &&
+          toast.error(`Ops!!Verifique se você já tem um cadastro similar!`);
+      });
+    }else{
+      axios
+      .post(
+        "http://localhost:3001/contacts",
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((res) => {
+        res && toast.success("Contato criado com sucesso!");
+       
+        setModalNewContactBoolean(false);
+        setListState(!listState)
+      })
+      .catch((err) => {
+        console.log(err?.message)
+        err.name &&
+          toast.error(`Ops!!Verifique se você já tem um cadastro similar!`);
+      });
+    }
+    
   };
 
   return (
@@ -105,8 +176,13 @@ export const ContactsContextProvider = ({ children }: iTechsContextsProps) => {
         setUserAllData,
         dataUser,
         listState,
-         setListState
-        
+        setListState,
+        deleteContactState,
+        setDeleteContactState,
+        contactDelete,
+        token,
+        newContact
+      
       }}
       
     >

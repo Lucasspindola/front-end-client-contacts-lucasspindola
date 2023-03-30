@@ -12,6 +12,9 @@ export const LiContact = styled.ul`
   gap: 20px;
   padding: 20px 0;
   .cardContact{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
     width: 80%;
     background: url("sua-imagem.jpg");
     position: relative;
@@ -22,17 +25,40 @@ export const LiContact = styled.ul`
     padding: 5px;
     img{
       
-      border-radius: 100%;
-    min-width: 50px;
-    min-height: 50px;
-    max-width:70px;
-    max-height:70px ;
+    border-radius: 100%;
+ 
+    width: 80px;
+    height: 70px;
+   
+    padding-right: 10px;
     }
+
+    .infoContacts{
+      display: flex;
+      flex-direction: column;
+      
+      width: 33%;
+      word-wrap: break-word;
+    }
+
+    .btnDeleteContact{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    background-color: rgb(103, 58, 183, 0.4);
+    color: rgba(255, 255, 255, 0.7);
+    border-radius: 3.2px;
+    margin: 0 0 0 5%;
+    }
+
+    .btnDeleteContact:hover {
+    background-color: rgb(103, 58, 183);
+    color: #fff
   }
-
-
-
-
+  }
+  
 .cardContact:before {
   content: "";
   position: absolute;

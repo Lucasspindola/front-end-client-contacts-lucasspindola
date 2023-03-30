@@ -1,79 +1,25 @@
-import { ContainerRegisterTech, Container } from "./style";
+import { Container, ContainerRegisterContact } from "./style";
 import { useForm } from "react-hook-form";
-import axios from "axios";
-import { toast } from "react-toastify";
-import { useContext, useState } from "react";
-import { ContactsContext } from "../../Contexts/ContactsContext";
+import { useContext } from "react";
+import { ContactsContext, iNewContact } from "../../Contexts/ContactsContext";
 import { iUserContext, UserContext } from "../../Contexts/UserContext";
-// import { useContext } from "react";
-// import { UserContext } from "../../Contexts/UserContext";
-// import { TechsContext } from "../../Contexts/TechsContext";
 
-// interface iContactRegister {
-//   setModalRegister: React.Dispatch<React.SetStateAction<boolean>>;
-// }
 
-interface iNewTechResponse {
-  created_at: string;
-  id: string;
-  status: string;
-  title: string;
-  updated_at: string;
-}
+
 
 export const ContactRegister = () => {
-
-
-
+  const { setModalNewContactBoolean } = useContext<iUserContext>(UserContext);
+  const {newContact} = useContext(ContactsContext);
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<iNewContact>();
-  // interface iNewTech {
-  //   status: string;
-  //   title: string;
-  // }
-  interface iNewContact{
-    name: string;
-    email: string;
-    phone: string;
-    profileImage?: string
-  }
-
-  const { setModalNewContactBoolean, modalNewContactBoolean } = useContext<iUserContext>(UserContext);
-  const {setListState, listState} = useContext(ContactsContext);
-  const newContact = (dataTech: iNewContact) => {
-    const token = window.localStorage.getItem("authToken");
-    axios
-      .post(
-        "http://localhost:3001/contacts",
-        dataTech,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-      .then((res) => {
-        res && toast.success("Cadastro realizado com sucesso!");
-       
-        setModalNewContactBoolean(false);
-        setListState(!listState)
-        // setBoleean((old) => !old);
-      })
-      .catch((err) => {
-        // console.log(err)
-        err.name &&
-          toast.error(`Ops!!Verifique se você já tem a tecnologia cadastrada!`);
-      });
-  };
 
   return (
     <Container>
-      <ContainerRegisterTech onSubmit={handleSubmit(newContact)}>
-        <div className="titleContainerTech">
+      <ContainerRegisterContact onSubmit={handleSubmit(newContact)}>
+        <div className="titleContainerContact">
           <h3>Cadastrar Contato</h3>
           <button
             onClick={() => {
@@ -117,11 +63,11 @@ export const ContactRegister = () => {
               {...register("profileImage")}
             />
           </div>
-          <button type="submit" className="btnRegisterTech">
+          <button type="submit" className="btnRegisterContact">
             Cadastrar
           </button>
         </form>
-      </ContainerRegisterTech>
+      </ContainerRegisterContact>
     </Container>
   );
 };

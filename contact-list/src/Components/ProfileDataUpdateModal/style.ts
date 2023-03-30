@@ -1,8 +1,11 @@
+
+
+
 import styled from "styled-components";
 
 export const Container = styled.div`
   min-height: 100vh;
-  height: 100%;
+  /* height: 100%; */
   min-width: 100vw;
   position: fixed;
   z-index: 999;
@@ -12,10 +15,8 @@ export const Container = styled.div`
   background-color: rgba(33, 37, 41, 0.5);
   
 `;
-export const ContainerRegisterContact = styled.div`
-
-  min-height: 274px;
-  
+export const ContainerUpdateDataUser = styled.div`
+  min-height: 620px;
   width: 100%;
   position: absolute;
   background-color:red;
@@ -23,10 +24,6 @@ export const ContainerRegisterContact = styled.div`
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-
-
-  
-    
     background: url("sua-imagem.jpg");
     position: relative;
     overflow: hidden;
@@ -34,9 +31,7 @@ export const ContainerRegisterContact = styled.div`
     opacity: 0.8;
     background-color: rgba(255, 255, 255, 0.3);
     padding: 5px;
-   
-
-
+  
 :before {
   content: "";
   position: absolute;
@@ -49,6 +44,8 @@ export const ContainerRegisterContact = styled.div`
   transform: skewY(-10deg);
   transform-origin: 0;
 }
+max-height: 90%;
+    width: 369px;
 
 :after {
   content: "";
@@ -76,7 +73,6 @@ export const ContainerRegisterContact = styled.div`
   }
   .contains {
     width: 100%;
-    /* height: 10%; */
     display: flex;
     flex-direction: column;
     select {
@@ -119,7 +115,7 @@ export const ContainerRegisterContact = styled.div`
     font-weight: 700;
     margin-bottom: 8px;
   }
-  .titleContainerContact {
+  .titleContainerDataUser {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -130,7 +126,7 @@ export const ContainerRegisterContact = styled.div`
     background-color: #343b41;
     border-radius: 3px 3px 0 0;
   }
-  .btnRegisterContact {
+  .btnUpdateDataUser {
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -146,16 +142,13 @@ export const ContainerRegisterContact = styled.div`
   }
 
 
-
-
-  .btnRegisterContact:hover {
+  .btnUpdateDataUser:hover {
     background-color: rgb(103, 58, 183);
   }
   @media only screen and (min-width: 700px) {
     height: 342px;
     width: 369px;
-
     display: flex;
-    /* margin: 0 34%; */
   }
 `;
+

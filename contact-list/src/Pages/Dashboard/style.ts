@@ -13,6 +13,17 @@ export const ContainerDashboard = styled.main`
     max-height:70px ;
     
   }
+  .btnProfileEdit{
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    margin: 0 5%;
+    border-radius: 100%;
+    width: 55px;
+    height: 55px;
+  }
   main {
     display: flex;
     padding: 30px 0;
@@ -24,9 +35,6 @@ export const ContainerDashboard = styled.main`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    img {
-      margin: 0 5%;
-    }
     button {
       cursor: pointer;
       margin: 0 5%;
@@ -35,7 +43,6 @@ export const ContainerDashboard = styled.main`
       border: none;
       border-radius: 4px;
       background-color: rgba(33, 37, 41, 1);
-      /* grey-3 */
       color: #fff;
     }
   }
@@ -54,7 +61,7 @@ export const ContainerDashboard = styled.main`
       margin: 0 5%;
     }
   }
-  .moduleUser {
+  .contactCurrent {
     font-family: inter;
     font-style: Mixed;
     font-size: 12px;
@@ -71,7 +78,7 @@ export const ContainerDashboard = styled.main`
     font-weight: 400;
     color: #ffffff;
   }
-  /* parte dois */
+  
   .containerTitleUl {
     display: flex;
     width: 100%;
@@ -96,12 +103,19 @@ export const ContainerDashboard = styled.main`
     }
   }
   @media only screen and (min-width: 700px) {
+    .btnProfileEdit{
+    
+    margin: 0 0 0 20%;
+    
+  }
+    
     main {
       display: flex;
       flex-direction: column;
       padding: 30px 0;
       margin: 0 20% 0 20%;
       gap: 30px;
+      
     }
     .containerInformationsProfile {
       display: flex;
