@@ -11,23 +11,34 @@ export interface iContactsProps {
 }
 
 export const ListOfContacts = () => {
-  const { userAllData, contactDelete } = useContext(ContactsContext);
-
+  const { userAllData, contactDelete,setUpdateState, setIdContactToUpdate,updateDataContact} = useContext(ContactsContext);
+   
+  const stateIdUpdate= async(idContact: string)=>{
+    await updateDataContact(idContact)
+    setIdContactToUpdate(idContact)
+    
+    setUpdateState(true)
+   }
   if (userAllData?.contacts?.length !== 0) {
     let contacts = userAllData.contacts;
     return (
       <LiContact>
+        
          {contacts?.map((contact: iContact) => (
-          <div className="cardContact">
+          <div key={contact?.id} className="cardContact">
             <img src={contact.profileImage}  alt="picts_profile"/>
             <div className="infoContacts">
             <span> Nome: {contact.name}</span>
              <span> Email: {contact.email}</span>
              <span> Cel: {contact.phone}</span>
             </div>
-            <button key={contact.id} className="btnDeleteContact" onClick={()=> contactDelete(contact.id)}>Deletar</button>
+            <div className="containerBtnsContactsEditAnDelete">
+            <button key={contact.id} className="btnsContactsEditAndDelete" onClick={()=>{stateIdUpdate(contact.id)}} >Editar</button>
+            <button  className="btnsContactsEditAndDelete" onClick={()=> contactDelete(contact?.id)}>Deletar</button>
+            </div>
+           
           </div>
-       
+      
         ))}
       </LiContact> 
     );

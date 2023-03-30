@@ -39,7 +39,7 @@ export interface IUpdateUser {
 
 export const ProfileDataUserUpdateModal = () => {
   const { userAllData,dataUser, logout, listState, token} = useContext(ContactsContext);
-  const { updateUserData, setUpdateUserState} = useContext(UserContext);
+  const { updateUserData, setUpdateUserState,deleteUser} = useContext(UserContext);
   const [nameState, setName] = useState(userAllData?.name);
   const [emailState, setEmail] = useState(userAllData?.email);
   const [profileImageState, setProfileImage] = useState(userAllData?.profileImage);
@@ -127,10 +127,11 @@ export const ProfileDataUserUpdateModal = () => {
           </button>
           
         </form>
-        <button type="submit" className="btnUpdateDataUser">
-            Deleter
+        <button onClick={()=>{deleteUser(userAllData?.id)}} type="submit" className="btnUpdateDataUser">
+            Deletar Usuário
         </button>
       </ContainerUpdateDataUser>
     </Container>
   );
 };
+

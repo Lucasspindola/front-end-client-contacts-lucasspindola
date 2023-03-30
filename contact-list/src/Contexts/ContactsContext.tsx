@@ -1,8 +1,9 @@
 import { ReactNode, createContext, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import axios from "axios";
 import { iUserContext, UserContext } from "./UserContext";
+
+import { instance } from "../Services/api";
 interface iContactsContextsProps {
   children: ReactNode;
 }
@@ -14,12 +15,27 @@ export interface iContact{
   profileImage: string;
   created_at: string;
 	updatedAt:string;
-	deletedAt: null
+	deletedAt: null | string
+}
+
+interface IRequestUpdateContact{
+  name?: string;
+  email?: string;
+  phone?: string;
+  profileImage?:null| string;
+
 }
 export interface iNewContact{
   name: string;
   email: string;
   phone: string;
+  profileImage?: null|string
+}
+
+export interface IUpdateNewDataContact{
+  name?: string;
+  email?: string;
+  phone?: string;
   profileImage?: null|string
 }
 export interface iDataUser {
@@ -33,6 +49,20 @@ export interface iDataUser {
   profileImage: string;
   contacts:iContact[]
 }
+interface userId{
+  id:string
+}
+interface IResponseUpdateContact{
+  id:string;
+  name:string;
+  phone:string;
+  email:string;
+  profileImage:string;
+  createdAt:string;
+  updatedAt:string;
+  deletedAt:null|string;
+  user:userId
+}
 export interface iContactContext {
   logout: () => void;
   userAllData: iDataUser;
@@ -45,6 +75,13 @@ export interface iContactContext {
   contactDelete:(id: string) => Promise<void>;
   token: string;
   newContact: (data: iNewContact) => void;
+  updateState: boolean;
+  setUpdateState:  React.Dispatch<React.SetStateAction<boolean>>,
+  idContactToUpdate: string;
+   setIdContactToUpdate: React.Dispatch<React.SetStateAction<string>>;
+   contactEditState:iContact;
+   updateDataContact:(id: string)=> Promise<iContact | undefined>;
+   updateContactNewData: (data: IRequestUpdateContact) => void
 }
 
 export const ContactsContext = createContext<iContactContext>({} as iContactContext);
@@ -59,8 +96,19 @@ export const ContactsContextProvider = ({ children }: iContactsContextsProps) =>
   const [userAllData, setUserAllData] = useState<iDataUser>(
     {} as iDataUser
   );
+  const [contactEditState, setContactEditState] = useState<iContact>({
+    id: "",
+    name: "",
+    email: "",
+    phone: "",
+    profileImage: "",
+    created_at: "",
+    updatedAt: "",
+    deletedAt: null
+  });
   const [listState, setListState] = useState<boolean>(false);
- 
+  const [updateState, setUpdateState] = useState<boolean>(false);
+  const [idContactToUpdate, setIdContactToUpdate] = useState<string>("");
   const [deleteContactState, setDeleteContactState] = useState<boolean>(false);
   
   
@@ -68,14 +116,17 @@ export const ContactsContextProvider = ({ children }: iContactsContextsProps) =>
     const token = window.localStorage.getItem("authToken");
     if (token) {
       try {
-        return await axios
-          .get(`http://localhost:3001/contacts`, {
+        return await instance
+          .get(`contacts`, {
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
           })
           .then((res) => {
+            if(res.data.profileImage=== ""){
+              res.data.profileImage= "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQJGlDRZM5zsQv-p66Q6MYlWMqYgokxPNLOw&usqp=CAU";}
+             
             setUserAllData(res.data);
             return
           });
@@ -89,8 +140,8 @@ export const ContactsContextProvider = ({ children }: iContactsContextsProps) =>
 
   const contactDelete = async (id: string) => {
     const token = window.localStorage.getItem("authToken");
-    await axios
-      .delete(`http://localhost:3001/contacts/${id}`, {
+    await instance
+      .delete(`contacts/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -109,18 +160,16 @@ export const ContactsContextProvider = ({ children }: iContactsContextsProps) =>
     navigate("/login");
     sucessLogout("Sua sessão foi encerrada com sucesso!");
   };
-  const { setModalNewContactBoolean } = useContext<iUserContext>(UserContext);
+  const { setModalNewContactBoolean} = useContext<iUserContext>(UserContext);
   const newContact = (data: iNewContact) => {
     const token = window.localStorage.getItem("authToken");
 
     if(data?.profileImage === ""){
-      console.log(data)
-
       data.profileImage= "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQJGlDRZM5zsQv-p66Q6MYlWMqYgokxPNLOw&usqp=CAU";
-      console.log(data)
-      axios
+     
+      instance
       .post(
-        "http://localhost:3001/contacts",
+        "contacts",
         data,
         {
           headers: {
@@ -142,9 +191,9 @@ export const ContactsContextProvider = ({ children }: iContactsContextsProps) =>
           toast.error(`Ops!!Verifique se você já tem um cadastro similar!`);
       });
     }else{
-      axios
+      instance
       .post(
-        "http://localhost:3001/contacts",
+        "contacts",
         data,
         {
           headers: {
@@ -165,8 +214,57 @@ export const ContactsContextProvider = ({ children }: iContactsContextsProps) =>
           toast.error(`Ops!!Verifique se você já tem um cadastro similar!`);
       });
     }
-    
   };
+
+
+ 
+  const updateContactNewData = (data: IRequestUpdateContact) => {
+    const token = window.localStorage.getItem("authToken");
+    instance
+      .patch<IResponseUpdateContact>(
+        `contacts/${idContactToUpdate}`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((res) => {
+        res && toast.success("Update realizado com sucesso!");
+        setUpdateState(false)
+        setListState(!listState)
+      })
+      .catch((err) => {
+        err &&
+          toast.error("Ops!! Algo errado aconteceu.Tente mais tarde!");
+      });
+  };
+
+
+  async function updateDataContact(id: string) {
+    const token = window.localStorage.getItem("authToken");
+    if (token) {
+      try {
+        return await instance
+          .get<iContact>(`users/contact/${id}`, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          .then((res) => {
+            let dataContact= res.data
+            setContactEditState(dataContact);
+            return dataContact
+          });
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  }
+  
 
   return (
     <ContactsContext.Provider
@@ -181,8 +279,14 @@ export const ContactsContextProvider = ({ children }: iContactsContextsProps) =>
         setDeleteContactState,
         contactDelete,
         token,
-        newContact
-      
+        newContact,
+        updateState,
+        setUpdateState,
+        idContactToUpdate,
+        setIdContactToUpdate,
+        contactEditState,
+        updateDataContact,
+        updateContactNewData
       }}
       
     >

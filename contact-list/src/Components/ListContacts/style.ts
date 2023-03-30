@@ -40,11 +40,19 @@ export const LiContact = styled.ul`
       width: 33%;
       word-wrap: break-word;
     }
-
-    .btnDeleteContact{
+    .containerBtnsContactsEditAnDelete{
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      padding: 2px;
+      gap: 2px;
+    }
+    .btnsContactsEditAndDelete{
     display: flex;
     align-items: center;
     justify-content: center;
+    
+    height: 50px;
     cursor: pointer;
     border: none;
     background-color: rgb(103, 58, 183, 0.4);
@@ -53,7 +61,7 @@ export const LiContact = styled.ul`
     margin: 0 0 0 5%;
     }
 
-    .btnDeleteContact:hover {
+    .btnsContactsEditAndDelete:hover {
     background-color: rgb(103, 58, 183);
     color: #fff
   }

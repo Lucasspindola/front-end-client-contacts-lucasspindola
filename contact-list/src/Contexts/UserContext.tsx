@@ -1,7 +1,9 @@
-import React, { ReactNode, createContext, useState } from "react";
+import React, { ReactNode, createContext, useState, useContext } from "react";
 import axios from "axios";
 import {useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { ContactsContext } from "./ContactsContext";
+import { instance } from "../Services/api";
 
 interface iUserContextProps {
   children: ReactNode;
@@ -66,8 +68,10 @@ export interface iUserContext {
   modalNewContactBoolean: boolean;
   updateUserData:  (data: IUpdateUserRequest) => void;
   updateUserState:boolean;
-  setUpdateUserState: React.Dispatch<React.SetStateAction<boolean>>
- 
+  setUpdateUserState: React.Dispatch<React.SetStateAction<boolean>>;
+  deleteUser: (idUserDelete: string) => void;
+  userDataState: boolean;
+  setUserDataState:React.Dispatch<React.SetStateAction<boolean>>
 }
 export const UserContext = createContext({} as iUserContext);
 
@@ -75,12 +79,13 @@ export const UserContextProvider = ({ children }: iUserContextProps) => {
 
   const [modalNewContactBoolean, setModalNewContactBoolean] = useState<boolean>(false);
   const [updateUserState, setUpdateUserState] = useState<boolean>(false);
+  const [userDataState, setUserDataState] = useState<boolean>(false);
   const navigate = useNavigate();
 
 
   const loginUser = (data: iLogin) => {
-    axios
-      .post<iLoginToken>("http://localhost:3001/login", data)
+    instance
+      .post<iLoginToken>("login", data)
       .then((res) => {
         console.log(res.data.token)
         localStorage.removeItem("authToken");
@@ -106,18 +111,17 @@ export const UserContextProvider = ({ children }: iUserContextProps) => {
       progress: undefined,
     });
   };
-
+ 
   const registerUser = (data: iRegisterUser) => {
      
      if(data?.profileImage === ""){
       
       const {passwordConfirm, profileImage, ...newData } = data;
       newData.isAdm= false;
-      axios
-      .post<iLoginResponse>("http://localhost:3001/users", newData)
+      instance.post<iLoginResponse>("/users", newData)
       .then((response) => {
         navigate("/login");
-      console.log(response.data,"THEN, AQUI")
+      
         sucessRegister("Registro realizado com sucesso!");
       })
       .catch((err) => {
@@ -130,8 +134,8 @@ export const UserContextProvider = ({ children }: iUserContextProps) => {
       const {passwordConfirm, ...newData } = data;
       newData.isAdm= false;
 
-      axios
-      .post<iLoginResponse>("http://localhost:3001/users", newData)
+      instance
+      .post<iLoginResponse>("users", newData)
       .then((response) => {
         navigate("/login");
       console.log(response.data,"THEN, AQUI")
@@ -143,15 +147,13 @@ export const UserContextProvider = ({ children }: iUserContextProps) => {
       
      }
     
-
-  
   };
-  
+
   const updateUserData = (data: IUpdateUserRequest) => {
     const token = window.localStorage.getItem("authToken");
-    axios
+    instance
       .patch<IUpdateResponse>(
-        `http://localhost:3001/users`,
+        `users`,
         data,
         {
           headers: {
@@ -162,13 +164,45 @@ export const UserContextProvider = ({ children }: iUserContextProps) => {
       )
       .then((res) => {
         res && toast.success("Update realizado com sucesso!");
+        setUserDataState(!userDataState)
         setUpdateUserState(false);
+        
+        
+        
       })
       .catch((err) => {
         err &&
           toast.error("Ops!! Algo errado aconteceu.Tente mais tarde!");
       });
   };
+
+
+  const deleteUser = (idUserDelete: string) => {
+    
+    const token = window.localStorage.getItem("authToken");
+    instance
+      .delete(
+        `users/${idUserDelete}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((res) => {
+        console.log(res)
+        res && toast.success("Usuário deletado com sucesso! Até mais!");
+        setUpdateUserState(false);
+        navigate("/")
+      })
+      .catch((err) => {
+        console.log(err)
+        err &&
+          toast.error("Ops!! Algo errado aconteceu.Tente mais tarde!");
+      });
+  };
+
 
 
 
@@ -180,10 +214,15 @@ export const UserContextProvider = ({ children }: iUserContextProps) => {
         modalNewContactBoolean, setModalNewContactBoolean,
         updateUserData,
         updateUserState,
-         setUpdateUserState
+         setUpdateUserState,
+         deleteUser,
+         userDataState,
+          setUserDataState
+        
       }}
     >
       {children}
     </UserContext.Provider>
   );
 };
+

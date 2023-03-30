@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { ContactRegister } from "../../Components/ContactRegister";
 import { ListOfContacts } from "../../Components/ListContacts";
 import { ProfileDataUserUpdateModal } from "../../Components/ProfileDataUpdateModal";
+import { ContactsUpdateModal } from "../../Components/ContactsUpdateModal";
 
 export interface iContextContactDashboard {
   setModalRegister: React.Dispatch<React.SetStateAction<boolean>>;
@@ -16,18 +17,15 @@ export interface iContextContactDashboard {
 
 export const Dashboard = () => {
 
-  // const [userAllData, setUserAllData] = useState<iDataUser>(
-  //   {} as iDataUser
-  // );
-  const { setModalNewContactBoolean, modalNewContactBoolean, updateUserState, setUpdateUserState } = useContext<iUserContext>(UserContext);
-  const { userAllData,dataUser, logout, listState, token} = useContext(ContactsContext);
- 
+  const { setModalNewContactBoolean, modalNewContactBoolean, updateUserState, setUpdateUserState,userDataState } = useContext<iUserContext>(UserContext);
+  const { userAllData,dataUser, logout, listState, token,updateState} = useContext(ContactsContext);
+  
 useEffect(() => {
   dataUser();
-}, [listState]);
+}, [listState,userDataState]);
   return (
     <>
-    
+    {updateState? <ContactsUpdateModal/>: "" }
     {modalNewContactBoolean? <ContactRegister/> : "" }
     {updateUserState? <ProfileDataUserUpdateModal/> : "" }
     
@@ -36,6 +34,7 @@ useEffect(() => {
         
           <header>
             <button className="btnProfileEdit" onClick={()=>setUpdateUserState(true)}>
+
               <img className="logoIcon" src=  {userAllData?.profileImage} alt="" />
               Editar
               </button>

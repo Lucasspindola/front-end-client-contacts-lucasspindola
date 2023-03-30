@@ -11,6 +11,7 @@ export const ContainerDashboard = styled.main`
     min-height: 50px;
     max-width:70px;
     max-height:70px ;
+    margin: 0 0;
     
   }
   .btnProfileEdit{
@@ -131,9 +132,7 @@ export const ContainerDashboard = styled.main`
       }
     }
     header {
-      img {
-        margin: 0 0 0 20%;
-      }
+      
       button {
         margin: 0 20% 0 0;
       }
