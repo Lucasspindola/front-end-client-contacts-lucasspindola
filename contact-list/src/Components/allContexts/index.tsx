@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-// import { TechsContextProvider } from "../../Contexts/TechsContext";
+import { ContactsContextProvider } from "../../Contexts/ContactsContext";
 import { UserContextProvider } from "../../Contexts/UserContext";
 
 interface iAllContextChildren {
@@ -8,8 +8,7 @@ interface iAllContextChildren {
 export const AllContexts = ({ children }: iAllContextChildren) => {
   return (
     <UserContextProvider>
-      {/* <TechsContextProvider>{children}</TechsContextProvider> */}
-      {children}
+      <ContactsContextProvider>{children}</ContactsContextProvider>
     </UserContextProvider>
   );
 };

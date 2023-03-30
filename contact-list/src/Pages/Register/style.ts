@@ -71,7 +71,7 @@ export const RegisterContainer = styled.div`
       line-height: 28px;
       font-weight: 700;
       color: #f8f9fa;
-      /* grey-0 */
+    
     }
 
     span {
@@ -106,7 +106,6 @@ export const RegisterContainer = styled.div`
     border: none;
     background-color: rgba(52, 59, 65, 0.5);
     color: #868e96;
-    /* grey-2 */
     margin: 0 5% 0 5%;
     border-radius: 3.2px;
     padding: 8px;
@@ -124,7 +123,6 @@ export const RegisterContainer = styled.div`
     border: none;
     background-color: rgba(52, 59, 65, 1);
     color: #868e96;
-    /* grey-2 */
     margin: 0 5% 0 5%;
     border-radius: 3.2px;
     padding: 8px;
